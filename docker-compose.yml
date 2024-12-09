@@ -1,0 +1,18 @@
+services:
+  couchdb:
+    image: couchdb:latest
+    container_name: couchdb
+    hostname: couchdb
+    restart: always
+    ports:
+      - 5984:5984
+    volumes:
+      - /var/lib/srv/$USER/docker/library/couchdb/latest/rootfs/data/logs:/opt/couchdb/var/log
+      - /var/lib/srv/$USER/docker/library/couchdb/latest/rootfs/data/db/couchdb:/opt/couchdb/data
+      - /var/lib/srv/$USER/docker/library/couchdb/latest/rootfs/config/couchdb:/opt/couchdb/etc/local.d
+    environment:
+      COUCHDB_USER: ${DB_ADMIN_NAME}
+      COUCHDB_PASSWORD: ${DB_ADMIN_PASS}
+    extra_hosts:
+      - 'localhost:172.17.0.1'
+      - 'host.docker.internal:host-gateway'
