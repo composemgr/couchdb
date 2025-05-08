@@ -1,19 +1,29 @@
+# nginx proxy address - http://172.17.0.1:5984
+
 name: couchdb
+x-logging: &default-logging
+  options:
+    max-size: '5m'
+    max-file: '1'
+  driver: json-file
+
 services:
-  db:
+  couchdb:
     image: couchdb:latest
     container_name: couchdb
-    hostname: couchdb
+    hostname: ${BASE_HOST_NAME:-$HOSTNAME}
     restart: always
     pull_policy: always
+    logging: *default-logging
     environment:
+      - TZ=${TZ:-America/New_York}
       - COUCHDB_USER=${DB_ADMIN_NAME:-root}
-      - COUCHDB_PASSWORD=${DB_ADMIN_PASS:-password}
+      - COUCHDB_PASSWORD=${DB_ADMIN_PASS:-7QymVIMfaEfL2N68P65vkPC9XM5kanNB}
     ports:
       - 5984:5984
     volumes:
+      - /var/lib/srv/$USER/docker/db/couchdb/couchdb:/opt/couchdb/data
       - /var/lib/srv/$USER/docker/library/couchdb/latest/rootfs/data/logs:/opt/couchdb/var/log
-      - /var/lib/srv/$USER/docker/library/couchdb/latest/rootfs/data/db/couchdb:/opt/couchdb/data
       - /var/lib/srv/$USER/docker/library/couchdb/latest/rootfs/config/couchdb:/opt/couchdb/etc/local.d
     extra_hosts:
       - 'localhost:172.17.0.1'
