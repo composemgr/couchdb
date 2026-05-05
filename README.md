@@ -47,9 +47,9 @@ See `docker-compose.yaml` for complete list of configurable options.
 
 ## 📂 Volumes
 
-- `./rootfs/data/db/couchdb/couchdb` - Data storage
-- `./rootfs/data/log/couchdb` - Data storage
-- `./rootfs/config/couchdb` - Data storage
+- `./volumes/data/db/couchdb/couchdb` - Data storage
+- `./volumes/data/log/couchdb` - Data storage
+- `./volumes/config/couchdb` - Data storage
 
 ## 🔐 Security
 
