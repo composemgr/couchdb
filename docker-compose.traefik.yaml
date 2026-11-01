@@ -1,0 +1,49 @@
+name: couchdb
+x-logging: &default-logging
+  options:
+    max-size: '5m'
+    max-file: '1'
+  driver: json-file
+
+services:
+  app:
+    image: couchdb:latest
+    container_name: couchdb-app
+    domainname: ${BASE_DOMAIN_NAME:-example.com}
+    hostname: ${BASE_HOST_NAME:-$HOSTNAME}
+    restart: always
+    pull_policy: always
+    logging: *default-logging
+    environment:
+      TZ: ${TZ:-America/New_York}
+      CONTAINER_NAME: couchdb-app
+      HOSTNAME: ${BASE_HOST_NAME:-$HOSTNAME}
+      COUCHDB_USER: ${DB_ADMIN_NAME:-admin}
+      COUCHDB_PASSWORD: ${DB_ADMIN_PASS:-changeme_admin_password}
+    volumes:
+      - './volumes/db/couchdb/couchdb:/opt/couchdb/data:z'
+      - './volumes/log/couchdb:/opt/couchdb/var/log:z'
+      - './volumes/config/couchdb:/opt/couchdb/etc/local.d:z'
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.docker.network=traefik'
+      - 'traefik.http.routers.couchdb-app.entrypoints=http'
+      - 'traefik.http.routers.couchdb-app.rule=Host(`${BASE_HOST_NAME:-$HOSTNAME}`)'
+      - 'traefik.http.routers.couchdb-app.middlewares=couchdb-app-https-redirect'
+      - 'traefik.http.middlewares.couchdb-app-https-redirect.redirectscheme.scheme=https'
+      - 'traefik.http.routers.couchdb-app-secure.entrypoints=https'
+      - 'traefik.http.routers.couchdb-app-secure.rule=Host(`${BASE_HOST_NAME:-$HOSTNAME}`)'
+      - 'traefik.http.routers.couchdb-app-secure.tls.certresolver=cloudflare'
+      - 'traefik.http.routers.couchdb-app-secure.service=couchdb-app'
+      - 'traefik.http.services.couchdb-app.loadbalancer.server.port=5984'
+    networks:
+      - couchdb
+      - traefik
+
+
+networks:
+  couchdb:
+    name: couchdb
+    external: false
+  traefik:
+    external: true

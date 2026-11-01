@@ -1,4 +1,4 @@
-# nginx proxy address - http://172.17.0.1:5984
+# nginx proxy address - http://172.17.0.1:64147
 
 name: couchdb
 x-logging: &default-logging
@@ -11,25 +11,23 @@ services:
   app:
     image: couchdb:latest
     container_name: couchdb-app
+    domainname: ${BASE_DOMAIN_NAME:-example.com}
     hostname: ${BASE_HOST_NAME:-$HOSTNAME}
     restart: always
     pull_policy: always
     logging: *default-logging
     environment:
       TZ: ${TZ:-America/New_York}
+      CONTAINER_NAME: couchdb-app
+      HOSTNAME: ${BASE_HOST_NAME:-$HOSTNAME}
       COUCHDB_USER: ${DB_ADMIN_NAME:-admin}
       COUCHDB_PASSWORD: ${DB_ADMIN_PASS:-changeme_admin_password}
-      CONTAINER_NAME: couchdb-app
     ports:
-      - '172.17.0.1:5984:5984'
+      - '172.17.0.1:64147:5984'
     volumes:
-      - './volumes/data/db/couchdb/couchdb:/opt/couchdb/data'
-      - './volumes/data/log/couchdb:/opt/couchdb/var/log'
-      - './volumes/config/couchdb:/opt/couchdb/etc/local.d'
-    extra_hosts:
-      - 'localhost:172.17.0.1'
-      - 'couchdb:host-gateway'
-      - 'host.docker.internal:host-gateway'
+      - './volumes/db/couchdb/couchdb:/opt/couchdb/data:z'
+      - './volumes/log/couchdb:/opt/couchdb/var/log:z'
+      - './volumes/config/couchdb:/opt/couchdb/etc/local.d:z'
     networks:
       - couchdb
 
