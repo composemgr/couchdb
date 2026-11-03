@@ -22,6 +22,12 @@ services:
       HOSTNAME: ${BASE_HOST_NAME:-$HOSTNAME}
       COUCHDB_USER: ${DB_ADMIN_NAME:-admin}
       COUCHDB_PASSWORD: ${DB_ADMIN_PASS:-changeme_admin_password}
+    healthcheck:
+      test: ['CMD', 'curl', '-s', '-o', '/dev/null', '--max-time', '5', 'http://127.0.0.1:5984/']
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
     ports:
       - '172.17.0.1:64147:5984'
     volumes:
